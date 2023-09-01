@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1017923773394",
+    "project_id": "traveler-sunkitto",
+    "storage_bucket": "traveler-sunkitto.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1017923773394:android:39ced437593e3378911e0b",
+        "android_client_info": {
+          "package_name": "com.sunkitto.traveler"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1017923773394-4lf1tj8eg6rpjkk1hi2o5srd0tduavnn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sunkitto.traveler",
+            "certificate_hash": "d3a436ac3d65e07449345bf3516c0641e7f06e88"
+          }
+        },
+        {
+          "client_id": "1017923773394-pld95a1fqv71eohtne95a8php5n5l03h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDD0ssjxE1AzEB9Y_gjkri0PQJhDk4z83g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1017923773394-omcep8qe1e2r7ejfjuqvm3tmbapflkr1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
