@@ -1,17 +1,20 @@
 package com.sunkitto.traveler.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.sunkitto.traveler.common.Result
+import com.sunkitto.traveler.common.TravelerResult
 import com.sunkitto.traveler.data.exception.DataExceptionHandler
+import com.sunkitto.traveler.data.model.EquipmentDoc
+import com.sunkitto.traveler.data.model.asEquipment
+import com.sunkitto.traveler.domain.model.Equipment
 import com.sunkitto.traveler.domain.repository.EquipmentsRepository
-import com.sunkitto.traveler.model.Equipment
+import javax.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.onStart
-import javax.inject.Inject
 
 private const val EQUIPMENTS_COLLECTION = "equipments"
+
 private const val CATEGORY_ID_FIELD = "categoryId"
 
 class EquipmentsRepositoryImpl @Inject constructor(
@@ -19,15 +22,29 @@ class EquipmentsRepositoryImpl @Inject constructor(
     private val dataErrorHandler: DataExceptionHandler,
 ) : EquipmentsRepository {
 
-    override fun getEquipments(): Flow<Result<List<Equipment>>> =
+    /**
+     * Fetches equipments from Firestore equipments collection.
+     */
+    override fun getEquipments(): Flow<TravelerResult<List<Equipment>>> =
         callbackFlow {
             val snapshotListener = firestore.collection(EQUIPMENTS_COLLECTION)
-                .addSnapshotListener { snapshot, error ->
-                    val response = if(snapshot != null) {
-                        val equipments: List<Equipment> = snapshot.toObjects(Equipment::class.java)
-                        Result.Success(data = equipments)
+                .addSnapshotListener { snapshot, exception ->
+                    val response = if (snapshot != null) {
+                        val equipmentDocs: List<EquipmentDoc> = snapshot.toObjects(
+                            EquipmentDoc::class.java,
+                        )
+
+                        val equipments = snapshot
+                            .documents
+                            .zip(equipmentDocs) { document, equipmentDoc ->
+                                equipmentDoc.asEquipment(document.id)
+                            }
+
+                        TravelerResult.Success(data = equipments)
                     } else {
-                        Result.Error(exception = dataErrorHandler.handleException(error))
+                        TravelerResult.Error(
+                            exception = dataErrorHandler.handleException(exception),
+                        )
                     }
                     trySend(element = response)
                 }
@@ -37,19 +54,35 @@ class EquipmentsRepositoryImpl @Inject constructor(
             }
         }
             .onStart {
-                emit(Result.Loading)
+                emit(TravelerResult.Loading)
             }
 
-    override fun getEquipments(categoryId: Int): Flow<Result<List<Equipment>>> =
+    /**
+     * Fetches equipments from Firestore equipments collection
+     * that are belongs to a specific category.
+     * @param categoryId id of category
+     */
+    override fun getEquipments(categoryId: String): Flow<TravelerResult<List<Equipment>>> =
         callbackFlow {
             val snapshotListener = firestore.collection(EQUIPMENTS_COLLECTION)
                 .whereEqualTo(CATEGORY_ID_FIELD, categoryId)
-                .addSnapshotListener { snapshot, error ->
-                    val response = if(snapshot != null) {
-                        val equipments: List<Equipment> = snapshot.toObjects(Equipment::class.java)
-                        Result.Success(data = equipments)
+                .addSnapshotListener { snapshot, exception ->
+                    val response = if (snapshot != null) {
+                        val equipmentDocs: List<EquipmentDoc> = snapshot.toObjects(
+                            EquipmentDoc::class.java,
+                        )
+
+                        val equipments = snapshot
+                            .documents
+                            .zip(equipmentDocs) { document, equipmentDoc ->
+                                equipmentDoc.asEquipment(document.id)
+                            }
+
+                        TravelerResult.Success(data = equipments)
                     } else {
-                        Result.Error(exception = dataErrorHandler.handleException(error))
+                        TravelerResult.Error(
+                            exception = dataErrorHandler.handleException(exception),
+                        )
                     }
                     trySend(element = response)
                 }
@@ -59,19 +92,33 @@ class EquipmentsRepositoryImpl @Inject constructor(
             }
         }
             .onStart {
-                emit(Result.Loading)
+                emit(TravelerResult.Loading)
             }
 
-    override fun getEquipment(equipmentId: Int): Flow<Result<Equipment>> =
+    /**
+     * Fetches single specific equipment from Firestore equipments collection.
+     * @param equipmentId id of equipment.
+     */
+    override fun getEquipment(equipmentId: String): Flow<TravelerResult<Equipment?>> =
         callbackFlow {
             val snapshotListener = firestore.collection(EQUIPMENTS_COLLECTION)
-                .document(equipmentId.toString())
-                .addSnapshotListener { snapshot, error ->
-                    val response = if(snapshot != null) {
-                        val equipments: Equipment = snapshot.toObject(Equipment::class.java)!!
-                        Result.Success(data = equipments)
+                .document(equipmentId)
+                .addSnapshotListener { snapshot, exception ->
+                    val response = if (snapshot != null) {
+                        val equipmentDoc: EquipmentDoc? = snapshot.toObject(
+                            EquipmentDoc::class.java,
+                        )
+
+                        if (equipmentDoc == null) {
+                            TravelerResult.Success(data = null)
+                        } else {
+                            val equipment = equipmentDoc.asEquipment(equipmentId)
+                            TravelerResult.Success(data = equipment)
+                        }
                     } else {
-                        Result.Error(exception = dataErrorHandler.handleException(error))
+                        TravelerResult.Error(
+                            exception = dataErrorHandler.handleException(exception),
+                        )
                     }
                     trySend(element = response)
                 }
@@ -81,6 +128,6 @@ class EquipmentsRepositoryImpl @Inject constructor(
             }
         }
             .onStart {
-                emit(Result.Loading)
+                emit(TravelerResult.Loading)
             }
 }
