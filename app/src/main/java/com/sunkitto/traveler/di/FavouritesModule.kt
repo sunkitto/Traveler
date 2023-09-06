@@ -4,16 +4,15 @@ import com.sunkitto.traveler.data.repository.FavouritesRepositoryImpl
 import com.sunkitto.traveler.domain.repository.FavouritesRepository
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 
 @Module
 @InstallIn(ViewModelComponent::class)
-interface FavouritesBindsModule {
+interface FavouritesModule {
 
     @Binds
     fun bindFavouritesRepository(
-        favouritesRepositoryImpl: FavouritesRepositoryImpl
+        favouritesRepositoryImpl: FavouritesRepositoryImpl,
     ): FavouritesRepository
 }

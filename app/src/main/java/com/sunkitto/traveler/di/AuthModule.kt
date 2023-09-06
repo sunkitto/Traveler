@@ -12,6 +12,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Qualifier
 
 @Module
 @InstallIn(ViewModelComponent::class)
@@ -19,13 +20,14 @@ object AuthModule {
 
     @Provides
     fun provideSignInClient(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
     ): SignInClient =
         Identity.getSignInClient(context)
 
     @Provides
+    @WebClientIdQualifier
     fun provideWebClientId(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
     ): String =
         context.resources.getString(R.string.your_web_client_id)
 }
@@ -36,6 +38,11 @@ interface AuthBindsModule {
 
     @Binds
     fun bindGoogleAuthRepository(
-        googleAuthRepositoryImpl: GoogleAuthRepositoryImpl
+        googleAuthRepositoryImpl: GoogleAuthRepositoryImpl,
     ): GoogleAuthRepository
 }
+
+@Retention(AnnotationRetention.RUNTIME)
+@MustBeDocumented
+@Qualifier
+annotation class WebClientIdQualifier

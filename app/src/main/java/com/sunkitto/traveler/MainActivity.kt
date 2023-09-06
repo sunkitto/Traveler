@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TravelerTheme {
-                if(firebaseAuth.get().currentUser != null) {
+                if (firebaseAuth.get().currentUser != null) {
                     TravelerNavGraph(
                         navController = rememberNavController(),
                         startDestination = Graph.BOTTOM_NAV_GRAPH,
