@@ -1,4 +1,4 @@
-package com.sunkitto.traveler.feature.auth.sign_in
+package com.sunkitto.traveler.feature.auth.signIn
 
 import android.content.IntentSender
 

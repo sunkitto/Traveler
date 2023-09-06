@@ -1,4 +1,4 @@
-package com.sunkitto.traveler.feature.auth.sign_in
+package com.sunkitto.traveler.feature.auth.signIn
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,25 +38,26 @@ fun SignInScreen(
                     Text(data.visuals.message)
                 }
             }
-        }
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(innerPadding),
         ) {
             ScreenTitleText(
                 modifier = Modifier
                     .padding(horizontal = 25.dp, vertical = 40.dp)
                     .fillMaxWidth(),
-                text = stringResource(id = R.string.sign_in)
+                text = stringResource(id = R.string.sign_in),
             )
-            if(state.isLoading) {
+            if (state.isLoading) {
                 LinearProgressIndicator(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(2.dp),
-                    strokeCap = StrokeCap.Round
+                        .height(2.dp)
+                        .testTag("signInProgressBar"),
+                    strokeCap = StrokeCap.Round,
                 )
             }
             TravelerOutlinedButton(
@@ -68,7 +70,7 @@ fun SignInScreen(
                 leadingIcon = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_google_logo),
-                        contentDescription = stringResource(id = R.string.sign_in_with_google)
+                        contentDescription = stringResource(id = R.string.sign_in_with_google),
                     )
                 },
                 text = stringResource(id = R.string.sign_in_with_google),
@@ -83,7 +85,7 @@ fun SignInScreenPreview() {
     TravelerTheme {
         SignInScreen(
             SignInState(),
-            SnackbarHostState()
+            SnackbarHostState(),
         ) { }
     }
 }
