@@ -20,7 +20,6 @@ fun NavGraphBuilder.accountNavigation(
     onNavigationToAuthGraph: () -> Unit,
 ) {
     composable(route = Route.ACCOUNT) {
-
         val viewModel = hiltViewModel<AccountViewModel>()
         val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -32,24 +31,24 @@ fun NavGraphBuilder.accountNavigation(
         }
 
         LaunchedEffect(key1 = state.isSignedOut) {
-            if(state.isSignedOut) {
+            if (state.isSignedOut) {
                 onNavigationToAuthGraph()
             }
         }
         LaunchedEffect(key1 = state.errorMessage) {
             val errorMessage = state.errorMessage
-            if(errorMessage != null) {
+            if (errorMessage != null) {
                 scope.launch {
                     snackBarHostState.currentSnackbarData?.dismiss()
                     snackBarHostState.showSnackbar(
-                        TravelerSnackBarVisuals(errorMessage)
+                        TravelerSnackBarVisuals(errorMessage),
                     )
                 }
             }
         }
 
         AccountScreen(
-            state = state,
+            uiState = state,
             snackBarHostState = snackBarHostState,
             onSignOutClick = {
                 viewModel.onEvent(AccountEvent.SignOut)
