@@ -2,17 +2,17 @@ package com.sunkitto.traveler.domain.repository
 
 import android.content.Intent
 import android.content.IntentSender
-import com.sunkitto.traveler.common.Result
-import com.sunkitto.traveler.model.User
+import com.sunkitto.traveler.common.TravelerResult
+import com.sunkitto.traveler.domain.model.User
 import kotlinx.coroutines.flow.Flow
 
 interface GoogleAuthRepository {
 
-    fun getSignInIntent(): Flow<Result<IntentSender>>
+    fun getSignInIntent(): Flow<TravelerResult<IntentSender>>
 
-    fun signIn(intent: Intent): Flow<Result<Boolean>>
+    fun signIn(intent: Intent): Flow<TravelerResult<Boolean>>
 
     fun getUser(): User?
 
-    fun signOut(): Flow<Result<Boolean>>
+    fun signOut(): Flow<TravelerResult<Boolean>>
 }
