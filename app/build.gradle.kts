@@ -41,11 +41,21 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("C:\\Users\\Sunkeeto\\traveler.jks")
+            keyAlias = "traveler"
+            storePassword = "traveler123"
+            keyPassword = "traveler123"
+        }
+    }
+
     buildTypes {
         debug {
             isDebuggable = true
             isMinifyEnabled = false
             isShrinkResources = false
+            signingConfig = signingConfigs.getByName("debug")
         }
         release {
             isDebuggable = false
@@ -55,6 +65,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
