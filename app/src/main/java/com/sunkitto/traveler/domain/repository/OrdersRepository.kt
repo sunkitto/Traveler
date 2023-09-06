@@ -1,14 +1,18 @@
 package com.sunkitto.traveler.domain.repository
 
-import com.sunkitto.traveler.common.Result
-import com.sunkitto.traveler.model.Order
+import com.sunkitto.traveler.common.TravelerResult
+import com.sunkitto.traveler.domain.model.Order
 import kotlinx.coroutines.flow.Flow
 
 interface OrdersRepository {
 
-    fun getOrders(): Flow<Result<List<Order>>>
+    fun getOrders(): Flow<TravelerResult<List<Order>>>
 
-    suspend fun upsertOrder(order: Order): Result<Boolean>
+    fun getOrder(equipmentId: String): Flow<TravelerResult<Order?>>
 
-    suspend fun removeOrder(order: Order): Result<Boolean>
+    suspend fun addOrder(order: Order): Result<Any>
+
+    suspend fun updateOrder(order: Order): Result<Any>
+
+    suspend fun removeOrder(orderId: String): Result<Any>
 }
