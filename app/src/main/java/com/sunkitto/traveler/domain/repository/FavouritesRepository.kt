@@ -1,14 +1,16 @@
 package com.sunkitto.traveler.domain.repository
 
-import com.sunkitto.traveler.common.Result
-import com.sunkitto.traveler.model.Favourite
+import com.sunkitto.traveler.common.TravelerResult
+import com.sunkitto.traveler.domain.model.Favourite
 import kotlinx.coroutines.flow.Flow
 
 interface FavouritesRepository {
 
-    fun getFavouriteEquipment(): Flow<Result<List<Favourite>>>
+    fun getFavourites(): Flow<TravelerResult<List<Favourite>>>
 
-    suspend fun setFavoriteEquipment(favourite: Favourite): Result<Boolean>
+    fun getFavourite(equipmentId: String): Flow<TravelerResult<Favourite?>>
 
-    suspend fun removeFavoriteEquipment(favourite: Favourite): Result<Boolean>
+    suspend fun addFavorite(favourite: Favourite): Result<Any>
+
+    suspend fun removeFavorite(favouriteId: String): Result<Any>
 }
