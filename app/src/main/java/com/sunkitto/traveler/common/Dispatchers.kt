@@ -7,6 +7,9 @@ import javax.inject.Qualifier
 @Qualifier
 annotation class Dispatcher(val travelerDispatcher: TravelerDispatchers)
 
+/**
+ * Enumeration of dispatchers used in the app.
+ */
 enum class TravelerDispatchers {
     DEFAULT,
     IO,

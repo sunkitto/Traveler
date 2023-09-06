@@ -2,16 +2,16 @@ package com.sunkitto.traveler.feature.categories
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sunkitto.traveler.common.Result
+import com.sunkitto.traveler.common.TravelerResult
 import com.sunkitto.traveler.domain.usecase.GetCategoriesUseCase
 import com.sunkitto.traveler.feature.UiErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import javax.inject.Inject
 
 @HiltViewModel
 class CategoriesViewModel @Inject constructor(
@@ -23,7 +23,7 @@ class CategoriesViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     fun onEvent(event: CategoriesEvent) {
-        when(event) {
+        when (event) {
             is CategoriesEvent.LoadCategories -> {
                 getCategories()
             }
@@ -33,8 +33,8 @@ class CategoriesViewModel @Inject constructor(
     private fun getCategories() {
         getCategoriesUseCase()
             .onEach { result ->
-                when(result) {
-                    is Result.Success -> {
+                when (result) {
+                    is TravelerResult.Success -> {
                         _state.update { categoriesState ->
                             categoriesState.copy(
                                 categories = result.data,
@@ -43,19 +43,19 @@ class CategoriesViewModel @Inject constructor(
                             )
                         }
                     }
-                    is Result.Error -> {
+                    is TravelerResult.Error -> {
                         _state.update { categoriesState ->
                             categoriesState.copy(
-                                categories = null,
+                                categories = emptyList(),
                                 errorMessage = uiErrorHandler.handleError(result.exception),
                                 isLoading = false,
                             )
                         }
                     }
-                    is Result.Loading -> {
+                    is TravelerResult.Loading -> {
                         _state.update { categoriesState ->
                             categoriesState.copy(
-                                categories = null,
+                                categories = emptyList(),
                                 errorMessage = null,
                                 isLoading = true,
                             )

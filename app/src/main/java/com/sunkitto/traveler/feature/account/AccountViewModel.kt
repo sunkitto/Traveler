@@ -2,16 +2,16 @@ package com.sunkitto.traveler.feature.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sunkitto.traveler.common.Result
+import com.sunkitto.traveler.common.TravelerResult
 import com.sunkitto.traveler.domain.repository.GoogleAuthRepository
 import com.sunkitto.traveler.feature.UiErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import javax.inject.Inject
 
 @HiltViewModel
 class AccountViewModel @Inject constructor(
@@ -23,7 +23,7 @@ class AccountViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     fun onEvent(accountEvent: AccountEvent) {
-        when(accountEvent) {
+        when (accountEvent) {
             is AccountEvent.SignOut -> signOut()
             is AccountEvent.LoadUser -> loadUser()
         }
@@ -32,7 +32,7 @@ class AccountViewModel @Inject constructor(
     private fun loadUser() {
         _state.update { accountState ->
             accountState.copy(
-                user = googleAuthRepository.getUser()
+                user = googleAuthRepository.getUser()!!,
             )
         }
     }
@@ -40,8 +40,8 @@ class AccountViewModel @Inject constructor(
     private fun signOut() {
         googleAuthRepository.signOut()
             .onEach { result ->
-                when(result) {
-                    is Result.Success -> {
+                when (result) {
+                    is TravelerResult.Success -> {
                         _state.update { accountState ->
                             accountState.copy(
                                 isSignedOut = true,
@@ -50,7 +50,7 @@ class AccountViewModel @Inject constructor(
                             )
                         }
                     }
-                    is Result.Error -> {
+                    is TravelerResult.Error -> {
                         _state.update { accountState ->
                             accountState.copy(
                                 isSignedOut = false,
@@ -59,7 +59,7 @@ class AccountViewModel @Inject constructor(
                             )
                         }
                     }
-                    is Result.Loading -> {
+                    is TravelerResult.Loading -> {
                         _state.update { accountState ->
                             accountState.copy(
                                 isSignedOut = false,

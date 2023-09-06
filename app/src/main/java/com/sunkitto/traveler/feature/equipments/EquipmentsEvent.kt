@@ -1,8 +1,10 @@
 package com.sunkitto.traveler.feature.equipments
 
+import com.sunkitto.traveler.domain.model.SortType
+
 sealed interface EquipmentsEvent {
 
-    object SortEquipment  : EquipmentsEvent
+    data class SortEquipment(val sortType: SortType) : EquipmentsEvent
 
-    data class LoadEquipments(val categoryId: Int) : EquipmentsEvent
+    object LoadEquipments : EquipmentsEvent
 }

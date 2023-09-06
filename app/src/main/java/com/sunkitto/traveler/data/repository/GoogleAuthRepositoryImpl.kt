@@ -7,28 +7,33 @@ import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.sunkitto.traveler.common.Dispatcher
-import com.sunkitto.traveler.common.Result
 import com.sunkitto.traveler.common.TravelerDispatchers.IO
+import com.sunkitto.traveler.common.TravelerResult
 import com.sunkitto.traveler.common.asResult
 import com.sunkitto.traveler.data.exception.DataExceptionHandler
+import com.sunkitto.traveler.di.WebClientIdQualifier
+import com.sunkitto.traveler.domain.model.User
 import com.sunkitto.traveler.domain.repository.GoogleAuthRepository
-import com.sunkitto.traveler.model.User
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
 
 class GoogleAuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val signInClient: SignInClient,
-    private val webClientId: String,
+    @WebClientIdQualifier private val webClientId: String,
     private val dataExceptionHandler: DataExceptionHandler,
     @Dispatcher(IO) private val dispatcher: CoroutineDispatcher,
 ) : GoogleAuthRepository {
 
-    override fun getSignInIntent(): Flow<Result<IntentSender>> =
+    /**
+     * Returns [IntentSender] for Google Sign In that can be used futher
+     * away for showing bottom sheet for choosing Google account.
+     */
+    override fun getSignInIntent(): Flow<TravelerResult<IntentSender>> =
         flow {
             val result = signInClient.beginSignIn(
                 BeginSignInRequest.builder()
@@ -37,48 +42,57 @@ class GoogleAuthRepositoryImpl @Inject constructor(
                             .setSupported(true)
                             .setServerClientId(webClientId)
                             .setFilterByAuthorizedAccounts(false)
-                            .build())
+                            .build(),
+                    )
                     .setAutoSelectEnabled(true)
-                    .build()
+                    .build(),
             ).await()
             emit(result.pendingIntent.intentSender)
         }
             .flowOn(dispatcher)
             .asResult(dataExceptionHandler)
 
-    override fun signIn(intent: Intent): Flow<Result<Boolean>> =
+    /**
+     * SignIn to [FirebaseAuth] with Google Credentials that are gets from a
+     * provided [Intent].
+     * @param intent
+     */
+    override fun signIn(intent: Intent): Flow<TravelerResult<Boolean>> =
         flow {
             val credential = signInClient.getSignInCredentialFromIntent(intent)
             val googleCredentials = GoogleAuthProvider.getCredential(
                 credential.googleIdToken,
-                null
+                null,
             )
-            val user = firebaseAuth.signInWithCredential(googleCredentials).await().user
-            emit(user != null)
+            firebaseAuth.signInWithCredential(googleCredentials).await()
+            emit(true)
         }
             .flowOn(dispatcher)
             .asResult(dataExceptionHandler)
 
+    /**
+     * Returns a current authenticated [User] instance from [FirebaseAuth], can be null.
+     */
     override fun getUser(): User? {
         val user = firebaseAuth.currentUser
-        return if(user != null) {
+        return if (user == null) {
+            null
+        } else {
             User(
                 id = user.uid,
-                userName = user.displayName,
+                userName = user.displayName ?: "",
                 profilePictureUrl = user.photoUrl.toString(),
-                email = user.email,
+                email = user.email ?: "",
             )
-        } else {
-            null
         }
     }
 
-    override fun signOut(): Flow<Result<Boolean>> =
+    /**
+     * Sign Outs - resets [SignInClient] state to sing in.
+     */
+    override fun signOut(): Flow<TravelerResult<Boolean>> =
         flow {
             signInClient.signOut().await()
-            firebaseAuth.currentUser?.apply {
-                delete().await()
-            }
             emit(true)
         }
             .flowOn(dispatcher)

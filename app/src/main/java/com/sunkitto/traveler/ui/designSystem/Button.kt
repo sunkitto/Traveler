@@ -1,5 +1,6 @@
 package com.sunkitto.traveler.ui.designSystem
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
@@ -39,7 +40,7 @@ fun TravelerButton(
                 text = text,
                 style = MaterialTheme.typography.bodyLarge,
             )
-        }
+        },
     )
 }
 
@@ -92,7 +93,16 @@ fun TravelerIconButton(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light",
+    showBackground = true,
+)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark",
+    showBackground = true,
+)
 @Composable
 fun TravelerButtonPreview() {
     TravelerTheme {
@@ -104,7 +114,16 @@ fun TravelerButtonPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light",
+    showBackground = true,
+)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark",
+    showBackground = true,
+)
 @Composable
 fun TravelerOutlinedButtonPreview() {
     TravelerTheme {
@@ -122,7 +141,16 @@ fun TravelerOutlinedButtonPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light",
+    showBackground = true,
+)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark",
+    showBackground = true,
+)
 @Composable
 fun TravelerIconButtonPreview() {
     TravelerTheme {

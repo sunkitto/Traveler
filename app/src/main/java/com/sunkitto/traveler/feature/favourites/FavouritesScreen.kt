@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sunkitto.traveler.R
-import com.sunkitto.traveler.model.Equipment
+import com.sunkitto.traveler.domain.model.Equipment
 import com.sunkitto.traveler.ui.designSystem.EmptyContent
 import com.sunkitto.traveler.ui.designSystem.EquipmentCard
 import com.sunkitto.traveler.ui.designSystem.LoadingContent
@@ -23,28 +23,35 @@ import com.sunkitto.traveler.ui.theme.TravelerTheme
 @Composable
 fun FavouritesScreen(
     uiState: FavouritesState,
-    onEquipmentCardClick: (equipmentId: Int) -> Unit,
+    onEquipmentCardClick: (equipmentId: String) -> Unit,
 ) {
-    Column(Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 25.dp),
+    ) {
         ScreenTitleText(
-            modifier = Modifier.padding(horizontal = 25.dp, vertical = 40.dp),
-            text = stringResource(id = R.string.favourites)
+            modifier = Modifier.padding(vertical = 35.dp),
+            text = stringResource(id = R.string.favourites),
         )
-        if(uiState.isLoading) {
-            LoadingContent()
-        }
-        if(uiState.errorMessage != null) {
-            EmptyContent(descriptionText = uiState.errorMessage)
-        }
-        if(uiState.equipments == null) {
-            EmptyContent(
-                stringResource(id = R.string.favorites_empty)
-            )
-        } else {
-            FavouritesList(
-                equipments = uiState.equipments,
-                onEquipmentCardClick = onEquipmentCardClick
-            )
+        when {
+            uiState.isLoading -> {
+                LoadingContent()
+            }
+            uiState.equipments.isEmpty() && uiState.errorMessage == null -> {
+                EmptyContent(
+                    stringResource(id = R.string.favorites_empty),
+                )
+            }
+            uiState.errorMessage != null -> {
+                EmptyContent(descriptionText = uiState.errorMessage)
+            }
+            else -> {
+                FavouritesList(
+                    equipments = uiState.equipments,
+                    onEquipmentCardClick = onEquipmentCardClick,
+                )
+            }
         }
     }
 }
@@ -52,22 +59,20 @@ fun FavouritesScreen(
 @Composable
 fun FavouritesList(
     equipments: List<Equipment>,
-    onEquipmentCardClick: (equipmentId: Int) -> Unit,
+    onEquipmentCardClick: (equipmentId: String) -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 25.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         items(
             items = equipments,
             itemContent = { equipment ->
                 EquipmentCard(
                     equipment = equipment,
-                    onEquipmentClick = onEquipmentCardClick
+                    onEquipmentClick = onEquipmentCardClick,
                 )
-            }
+            },
         )
     }
 }
@@ -78,13 +83,16 @@ fun FavouritesScreenPreview() {
     TravelerTheme {
         FavouritesScreen(
             uiState = FavouritesState(
-                equipments = listOf(
-                    Equipment(name = "Equipment 1"),
-                    Equipment(name = "Equipment 2"),
-                    Equipment(name = "Equipment 3"),
-                    Equipment(name = "Equipment 4"),
-                    Equipment(name = "Equipment 5"),
-                )
+                equipments = List(10) {
+                    Equipment(
+                        id = "",
+                        name = "Equipment ${it + 1}",
+                        image = "",
+                        description = "",
+                        cost = 0,
+                        categoryId = "",
+                    )
+                },
             ),
             onEquipmentCardClick = {},
         )

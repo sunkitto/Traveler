@@ -1,15 +1,17 @@
 package com.sunkitto.traveler.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.sunkitto.traveler.common.Result
+import com.sunkitto.traveler.common.TravelerResult
 import com.sunkitto.traveler.data.exception.DataExceptionHandler
+import com.sunkitto.traveler.data.model.CategoryDoc
+import com.sunkitto.traveler.data.model.asCategory
+import com.sunkitto.traveler.domain.model.Category
 import com.sunkitto.traveler.domain.repository.CategoriesRepository
-import com.sunkitto.traveler.model.Category
+import javax.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.onStart
-import javax.inject.Inject
 
 private const val CATEGORIES_COLLECTION = "categories"
 
@@ -18,16 +20,31 @@ class CategoriesRepositoryImpl @Inject constructor(
     private val dataErrorHandler: DataExceptionHandler,
 ) : CategoriesRepository {
 
-    override fun getCategories(): Flow<Result<List<Category>>> =
+    /**
+     * Fetches categories from Firestore categories collection.
+     */
+    override fun getCategories(): Flow<TravelerResult<List<Category>>> =
         callbackFlow {
             val snapshotListener = firestore.collection(CATEGORIES_COLLECTION)
-                .addSnapshotListener { snapshot, error ->
-                    val response = if(snapshot != null) {
-                        val categories: List<Category> = snapshot.toObjects(Category::class.java)
-                        Result.Success(data = categories)
+                .addSnapshotListener { snapshot, exception ->
+                    val response = if (snapshot != null) {
+                        val categoryDocs: List<CategoryDoc> = snapshot.toObjects(
+                            CategoryDoc::class.java,
+                        )
+
+                        val categories = snapshot
+                            .documents
+                            .zip(categoryDocs) { document, categoryDoc ->
+                                categoryDoc.asCategory(document.id)
+                            }
+
+                        TravelerResult.Success(data = categories)
                     } else {
-                        Result.Error(exception = dataErrorHandler.handleException(error))
+                        TravelerResult.Error(
+                            exception = dataErrorHandler.handleException(exception),
+                        )
                     }
+
                     trySend(element = response)
                 }
 
@@ -36,6 +53,6 @@ class CategoriesRepositoryImpl @Inject constructor(
             }
         }
             .onStart {
-                emit(Result.Loading)
+                emit(TravelerResult.Loading)
             }
 }

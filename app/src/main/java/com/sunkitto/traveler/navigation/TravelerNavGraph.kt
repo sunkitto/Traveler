@@ -22,7 +22,7 @@ fun TravelerNavGraph(
                 onNavigationToAuthGraph = {
                     navController.popBackStack()
                     navController.navigate(route = Graph.AUTH_GRAPH)
-                }
+                },
             )
         }
     }

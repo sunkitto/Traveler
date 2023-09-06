@@ -1,14 +1,14 @@
 package com.sunkitto.traveler.domain.repository
 
-import com.sunkitto.traveler.common.Result
-import com.sunkitto.traveler.model.Equipment
+import com.sunkitto.traveler.common.TravelerResult
+import com.sunkitto.traveler.domain.model.Equipment
 import kotlinx.coroutines.flow.Flow
 
 interface EquipmentsRepository {
 
-    fun getEquipments(): Flow<Result<List<Equipment>>>
+    fun getEquipments(): Flow<TravelerResult<List<Equipment>>>
 
-    fun getEquipments(categoryId: Int): Flow<Result<List<Equipment>>>
+    fun getEquipments(categoryId: String): Flow<TravelerResult<List<Equipment>>>
 
-    fun getEquipment(equipmentId: Int): Flow<Result<Equipment>>
+    fun getEquipment(equipmentId: String): Flow<TravelerResult<Equipment?>>
 }

@@ -12,10 +12,9 @@ import com.sunkitto.traveler.feature.favourites.FavouritesViewModel
 import com.sunkitto.traveler.navigation.constants.Route
 
 fun NavGraphBuilder.favouritesNavigation(
-    onNavigateToEquipmentDetailed: (equipmentId: Int) -> Unit,
+    onNavigateToEquipmentDetailed: (equipmentId: String) -> Unit,
 ) {
     composable(route = Route.FAVOURITES) {
-
         val viewModel = hiltViewModel<FavouritesViewModel>()
         val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -27,7 +26,7 @@ fun NavGraphBuilder.favouritesNavigation(
             uiState = state,
             onEquipmentCardClick = { equipmentId ->
                 onNavigateToEquipmentDetailed(equipmentId)
-            }
+            },
         )
     }
 }

@@ -8,7 +8,7 @@ object Route {
     const val FAVOURITES = "favourites_route"
     const val ACCOUNT = "account_route"
 
-    const val EQUIPMENTS = "equipments_route"
-    const val EQUIPMENTS_DETAILED = "equipments_detailed_route"
+    const val EQUIPMENTS = "equipments_route/{categoryId}/{categoryName}"
+    const val EQUIPMENTS_DETAILED = "equipments_detailed_route/{equipmentId}"
     const val SEARCH = "search_route"
 }

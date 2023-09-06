@@ -2,7 +2,7 @@ package com.sunkitto.traveler.feature.favourites
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sunkitto.traveler.common.Result
+import com.sunkitto.traveler.common.TravelerResult
 import com.sunkitto.traveler.domain.usecase.GetFavouritesUseCase
 import com.sunkitto.traveler.feature.UiErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +23,7 @@ class FavouritesViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     fun onEvent(event: FavouritesEvent) {
-        when(event) {
+        when (event) {
             is FavouritesEvent.LoadFavourites -> {
                 getFavourites()
             }
@@ -33,8 +33,8 @@ class FavouritesViewModel @Inject constructor(
     private fun getFavourites() {
         getFavouritesUseCase()
             .onEach { result ->
-                when(result) {
-                    is Result.Success -> {
+                when (result) {
+                    is TravelerResult.Success -> {
                         _state.update { favouritesState ->
                             favouritesState.copy(
                                 equipments = result.data,
@@ -43,20 +43,20 @@ class FavouritesViewModel @Inject constructor(
                             )
                         }
                     }
-                    is Result.Error -> {
+                    is TravelerResult.Error -> {
                         _state.update { favouritesState ->
                             val errorMessage = uiErrorHandler.handleError(result.exception)
                             favouritesState.copy(
-                                equipments = null,
+                                equipments = emptyList(),
                                 errorMessage = errorMessage,
                                 isLoading = false,
                             )
                         }
                     }
-                    is Result.Loading -> {
+                    is TravelerResult.Loading -> {
                         _state.update { favouritesState ->
                             favouritesState.copy(
-                                equipments = null,
+                                equipments = emptyList(),
                                 errorMessage = null,
                                 isLoading = true,
                             )

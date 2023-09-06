@@ -1,3 +1,19 @@
+/*
+ * Copyright 2023 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.android.application)
@@ -5,6 +21,7 @@ plugins {
     alias(libs.plugins.kapt)
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -24,11 +41,21 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("C:\\Users\\Sunkeeto\\traveler.jks")
+            keyAlias = "traveler"
+            storePassword = "traveler123"
+            keyPassword = "traveler123"
+        }
+    }
+
     buildTypes {
         debug {
             isDebuggable = true
             isMinifyEnabled = false
             isShrinkResources = false
+            signingConfig = signingConfigs.getByName("debug")
         }
         release {
             isDebuggable = false
@@ -36,8 +63,9 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
@@ -58,6 +86,14 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    ktlint {
+        android.set(true)
+        verbose.set(true)
+        ignoreFailures.set(false)
+        reporters {
+            reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
+        }
+    }
 }
 
 dependencies {
@@ -76,7 +112,7 @@ dependencies {
     implementation(libs.compose.lifecycle.runtime)
     implementation(libs.compose.material.icons.ext)
 
-    // Glide
+    // Coil
     implementation(libs.compose.coil)
 
     // Dagger Hilt
@@ -102,7 +138,8 @@ dependencies {
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.compose.navigation.testing)
+    androidTestImplementation(libs.compose.coil.test)
     testImplementation(libs.androidx.test.ext.junit)
 
     debugImplementation(libs.compose.ui.tooling)

@@ -9,10 +9,10 @@ import dagger.hilt.android.components.ViewModelComponent
 
 @Module
 @InstallIn(ViewModelComponent::class)
-interface CategoriesBindsModule {
+interface CategoriesModule {
 
     @Binds
     fun bindCategoriesRepository(
-        categoriesRepositoryImpl: CategoriesRepositoryImpl
+        categoriesRepositoryImpl: CategoriesRepositoryImpl,
     ): CategoriesRepository
 }

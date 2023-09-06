@@ -16,7 +16,7 @@ fun BottomNavScreen(
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController = navController)
-        }
+        },
     ) { innerPadding ->
         BottomNavGraph(
             modifier = Modifier.padding(innerPadding),

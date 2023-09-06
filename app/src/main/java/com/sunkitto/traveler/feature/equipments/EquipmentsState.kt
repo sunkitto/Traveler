@@ -1,9 +1,10 @@
 package com.sunkitto.traveler.feature.equipments
 
-import com.sunkitto.traveler.model.Equipment
+import com.sunkitto.traveler.domain.model.Equipment
 
 data class EquipmentsState(
-    val equipments: List<Equipment>? = null,
+    val equipments: List<Equipment> = emptyList(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
+    val categoryName: String,
 )

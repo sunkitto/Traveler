@@ -2,5 +2,7 @@ package com.sunkitto.traveler.feature.search
 
 sealed interface SearchEvent {
 
-    object SearchEquipments : SearchEvent
+    data class SearchEquipments(val query: String) : SearchEvent
+
+    object ClearSearch : SearchEvent
 }
