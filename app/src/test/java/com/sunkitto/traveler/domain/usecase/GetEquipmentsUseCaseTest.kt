@@ -1,9 +1,9 @@
 package com.sunkitto.traveler.domain.usecase
 
-import com.sunkitto.traveler.common.Result
+import com.sunkitto.traveler.common.TravelerResult
 import com.sunkitto.traveler.data.repository.EquipmentsRepositoryImpl
-import com.sunkitto.traveler.model.Equipment
-import com.sunkitto.traveler.model.SortType
+import com.sunkitto.traveler.domain.model.Equipment
+import com.sunkitto.traveler.domain.model.SortType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
@@ -22,33 +22,46 @@ class GetEquipmentsUseCaseTest {
     @Before
     fun setup() {
         getEquipmentsUseCase = GetEquipmentsUseCase(
-            equipmentsRepository = equipmentsRepository
+            equipmentsRepository = equipmentsRepository,
         )
     }
 
     @Test
-    fun returns_sorted_by_highest_price_equipments() =
-        runTest {
-            val equipments = listOf(
-                Equipment(id = 1, cost = 10),
-                Equipment(id = 2, cost = 30),
-                Equipment(id = 3, cost = 20),
+    fun returns_sorted_by_highest_price_equipments() = runTest {
+        val testEquipments = listOf(
+            testEquipment(10),
+            testEquipment(30),
+            testEquipment(20),
+        )
+
+        `when`(equipmentsRepository.getEquipments())
+            .thenReturn(
+                flow {
+                    emit(TravelerResult.Success(data = testEquipments))
+                },
             )
 
-            `when`(equipmentsRepository.getEquipments())
-                .thenReturn(
-                    flow {
-                        emit(Result.Success(data = equipments))
-                    }
-                )
+        val getEquipmentsUseCase = GetEquipmentsUseCase(
+            equipmentsRepository = equipmentsRepository,
+        )
+        val sortedEquipments = getEquipmentsUseCase(sortType = SortType.HIGHEST_PRICE)
+            .first() as TravelerResult.Success
 
-            val getEquipmentsUseCase = GetEquipmentsUseCase(equipmentsRepository = equipmentsRepository)
-            val sortedEquipments = getEquipmentsUseCase(sortType = SortType.HIGHEST_PRICE)
-                .first() as Result.Success
-
-            assertEquals(
-                equipments.sortedByDescending { it.cost },
-                sortedEquipments.data
-            )
-        }
+        assertEquals(
+            testEquipments.sortedByDescending { equipment ->
+                equipment.cost
+            },
+            sortedEquipments.data,
+        )
+    }
 }
+
+private fun testEquipment(cost: Int) =
+    Equipment(
+        id = "",
+        name = "",
+        image = "",
+        description = "",
+        cost = cost,
+        categoryId = "",
+    )
