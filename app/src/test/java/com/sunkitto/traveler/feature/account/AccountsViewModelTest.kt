@@ -1,10 +1,10 @@
 package com.sunkitto.traveler.feature.account
 
-import com.sunkitto.traveler.common.Result
+import com.sunkitto.traveler.common.TravelerResult
 import com.sunkitto.traveler.data.exception.NoInternetConnectionException
 import com.sunkitto.traveler.data.repository.GoogleAuthRepositoryImpl
+import com.sunkitto.traveler.domain.model.User
 import com.sunkitto.traveler.feature.UiErrorHandler
-import com.sunkitto.traveler.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
@@ -16,6 +16,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 
@@ -38,7 +39,6 @@ class AccountsViewModelTest {
 
     @Test
     fun account_state_updated_and_returns_user_when_load_user_event_submitted() {
-
         `when`(googleAuthRepository.getUser())
             .thenReturn(testUser)
 
@@ -48,12 +48,11 @@ class AccountsViewModelTest {
 
     @Test
     fun account_state_updated_and_returns_success_when_sign_out_event_submitted() {
-
         `when`(googleAuthRepository.signOut())
             .thenReturn(
                 flow {
-                    Result.Success(data = true)
-                }
+                    emit(TravelerResult.Success(data = true))
+                },
             )
 
         accountViewModel.onEvent(AccountEvent.SignOut)
@@ -62,17 +61,16 @@ class AccountsViewModelTest {
 
     @Test
     fun account_state_updated_and_returns_error_when_sign_out_event_submitted() {
-
-        `when`(uiErrorHandler.handleError(NoInternetConnectionException()))
+        `when`(uiErrorHandler.handleError(any()))
             .thenReturn(
-                "No Internet Connection"
+                "No Internet Connection",
             )
 
         `when`(googleAuthRepository.signOut())
             .thenReturn(
                 flow {
-                    emit(Result.Error(exception = NoInternetConnectionException()))
-                }
+                    emit(TravelerResult.Error(exception = NoInternetConnectionException()))
+                },
             )
 
         accountViewModel.onEvent(AccountEvent.SignOut)
@@ -84,15 +82,14 @@ class AccountsViewModelTest {
 
     @Test
     fun account_state_updated_and_returns_load_when_sign_out_event_submitted() {
-
         `when`(googleAuthRepository.signOut())
             .thenReturn(
                 flow {
-                    emit(Result.Loading)
-                }
+                    emit(TravelerResult.Loading)
+                },
             )
 
-        accountViewModel.onEvent(AccountEvent.LoadUser)
+        accountViewModel.onEvent(AccountEvent.SignOut)
         assertTrue(accountViewModel.state.value.isLoading)
     }
 
@@ -107,5 +104,5 @@ private val testUser =
         id = "",
         email = "",
         userName = "",
-        profilePictureUrl = ""
+        profilePictureUrl = "",
     )
