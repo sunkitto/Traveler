@@ -1,10 +1,10 @@
 package com.sunkitto.traveler.feature.favourites
 
-import com.sunkitto.traveler.common.Result
+import com.sunkitto.traveler.common.TravelerResult
 import com.sunkitto.traveler.data.exception.NoInternetConnectionException
+import com.sunkitto.traveler.domain.model.Equipment
 import com.sunkitto.traveler.domain.usecase.GetFavouritesUseCase
 import com.sunkitto.traveler.feature.UiErrorHandler
-import com.sunkitto.traveler.model.Equipment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
@@ -16,6 +16,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 
@@ -38,31 +39,29 @@ class FavouritesViewModelTest {
 
     @Test
     fun favourites_state_updated_and_returns_success_when_load_favourites_event_submitted() {
-
         `when`(getFavouritesUseCase())
             .thenReturn(
                 flow {
-                    emit(Result.Success(data = testEquipments))
-                }
+                    emit(TravelerResult.Success(data = listOf(testEquipment())))
+                },
             )
 
         favouritesViewModel.onEvent(FavouritesEvent.LoadFavourites)
-        assertEquals(favouritesViewModel.state.value.equipments, testEquipments)
+        assertEquals(favouritesViewModel.state.value.equipments, listOf(testEquipment()))
     }
 
     @Test
     fun favourites_state_updated_and_returns_error_when_load_favourites_event_submitted() {
-
-        `when`(uiErrorHandler.handleError(NoInternetConnectionException()))
+        `when`(uiErrorHandler.handleError(any()))
             .thenReturn(
-                "No Internet Connection"
+                "No Internet Connection",
             )
 
         `when`(getFavouritesUseCase())
             .thenReturn(
                 flow {
-                    emit(Result.Error(exception = NoInternetConnectionException()))
-                }
+                    emit(TravelerResult.Error(exception = NoInternetConnectionException()))
+                },
             )
 
         favouritesViewModel.onEvent(FavouritesEvent.LoadFavourites)
@@ -74,16 +73,15 @@ class FavouritesViewModelTest {
 
     @Test
     fun favourites_state_updated_and_returns_load_when_load_favourites_event_submitted() {
-
         `when`(getFavouritesUseCase())
             .thenReturn(
                 flow {
-                    emit(Result.Loading)
-                }
+                    emit(TravelerResult.Loading)
+                },
             )
 
         favouritesViewModel.onEvent(FavouritesEvent.LoadFavourites)
-        assertTrue(favouritesViewModel.state.value.isLoading,)
+        assertTrue(favouritesViewModel.state.value.isLoading)
     }
 
     @After
@@ -92,6 +90,12 @@ class FavouritesViewModelTest {
     }
 }
 
-private val testEquipments = listOf(
-    Equipment(name = "Test")
-)
+private fun testEquipment() =
+    Equipment(
+        id = "",
+        name = "",
+        image = "",
+        description = "",
+        cost = 0,
+        categoryId = "",
+    )
