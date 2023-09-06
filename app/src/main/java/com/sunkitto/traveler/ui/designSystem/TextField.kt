@@ -13,28 +13,27 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sunkitto.traveler.R
+import com.sunkitto.traveler.feature.search.SearchState
 import com.sunkitto.traveler.ui.theme.TravelerTheme
 
 @Composable
 fun SearchTextField(
     modifier: Modifier = Modifier,
-    textState: MutableState<TextFieldValue>,
+    uiState: SearchState,
+    onTextChange: (query: String) -> Unit,
+    onClear: () -> Unit,
 ) {
     TextField(
         modifier = modifier.fillMaxWidth(),
-        value = textState.value,
+        value = uiState.searchQuery ?: "",
         onValueChange = { value ->
-            textState.value = value
+            onTextChange(value)
         },
         placeholder = {
             Text(
@@ -52,11 +51,11 @@ fun SearchTextField(
             )
         },
         trailingIcon = {
-            if (textState.value != TextFieldValue("")) {
+            if (uiState.searchQuery != "") {
                 IconButton(
                     onClick = {
-                        textState.value = TextFieldValue("")
-                    }
+                        onClear()
+                    },
                 ) {
                     Icon(
                         modifier = Modifier
@@ -82,9 +81,9 @@ fun SearchTextField(
 fun SearchTextFieldPreview() {
     TravelerTheme {
         SearchTextField(
-            textState = remember {
-                mutableStateOf(TextFieldValue(""))
-            }
+            uiState = SearchState(),
+            onTextChange = {},
+            onClear = {},
         )
     }
 }

@@ -17,7 +17,7 @@
     <string name="favourite">Favourite</string>
     <string name="remove_from_cart">Remove from Cart</string>
     <string name="decrease">Decrease</string>
-    <string name="favorites_empty">Favourites is empty</string>
+    <string name="favorites_empty">No favorite equipments saved</string>
     <string name="equipment">Equipment</string>
     <string name="category">Category</string>
     <string name="search">Search</string>
@@ -32,4 +32,18 @@
     <string name="type_search_query">Type search query in the field above.</string>
     <string name="equipments_count">Equipments Count</string>
     <string name="days_count">Days Count</string>
+    <string name="no_equipments">No equipments found for this category</string>
+    <string name="account_was_disabled">Account was disabled. Try again or use another one.</string>
+    <string name="profile_picture">Profile picture</string>
+    <string name="cost_descending">Cost descending</string>
+    <string name="cost_ascending">Cost ascending</string>
+    <string name="name_descending">Name [Z-A]</string>
+    <string name="name_ascending">Name [A-Z]</string>
+    <string name="cart_is_empty">Cart is empty</string>
+    <string name="rent">Rent</string>
+    <string name="success_rent">Your order was successfully sent to us. You will be soon contacted via email specified in your account to confirm the order.</string>
+    <string name="ok">OK</string>
+    <string name="done">Done</string>
+    <string name="total">Total:</string>
+    <string name="no_equipments_found">No equipments found</string>
 </resources>
