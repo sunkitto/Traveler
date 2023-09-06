@@ -5,16 +5,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.sunkitto.traveler.feature.search.SearchEvent
 import com.sunkitto.traveler.feature.search.SearchScreen
 import com.sunkitto.traveler.feature.search.SearchViewModel
 import com.sunkitto.traveler.navigation.constants.Route
 
 fun NavGraphBuilder.searchNavigation(
-    onNavigateToEquipmentDetailed: (equipmentId: Int) -> Unit,
+    onNavigateToEquipmentDetailed: (equipmentId: String) -> Unit,
     onBackClick: () -> Unit,
 ) {
     composable(route = Route.SEARCH) {
-
         val viewModel = hiltViewModel<SearchViewModel>()
         val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -25,6 +25,12 @@ fun NavGraphBuilder.searchNavigation(
             },
             onBackClick = {
                 onBackClick()
+            },
+            onTextChange = { query ->
+                viewModel.onEvent(SearchEvent.SearchEquipments(query))
+            },
+            onClear = {
+                viewModel.onEvent(SearchEvent.ClearSearch)
             }
         )
     }

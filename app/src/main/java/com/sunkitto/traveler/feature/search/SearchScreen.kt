@@ -11,16 +11,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sunkitto.traveler.R
-import com.sunkitto.traveler.model.Equipment
+import com.sunkitto.traveler.domain.model.Equipment
 import com.sunkitto.traveler.ui.designSystem.EmptyContent
 import com.sunkitto.traveler.ui.designSystem.EquipmentCard
 import com.sunkitto.traveler.ui.designSystem.LoadingContent
@@ -31,18 +28,17 @@ import com.sunkitto.traveler.ui.theme.TravelerTheme
 @Composable
 fun SearchScreen(
     uiState: SearchState,
-    onEquipmentClick: (equipmentId: Int) -> Unit,
+    onEquipmentClick: (equipmentId: String) -> Unit,
     onBackClick: () -> Unit,
+    onTextChange: (query: String) -> Unit,
+    onClear: () -> Unit,
 ) {
-
-    val textState = remember { mutableStateOf(TextFieldValue("")) }
-
     Column(Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .padding(horizontal = 25.dp, vertical = 40.dp)
                 .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             TravelerIconButton(
                 modifier = Modifier.padding(end = 25.dp),
@@ -50,28 +46,37 @@ fun SearchScreen(
                 onClick = {
                     onBackClick()
                 },
-                contentDescription = stringResource(id = R.string.back)
+                contentDescription = stringResource(id = R.string.back),
             )
             SearchTextField(
                 modifier = Modifier,
-                textState = textState,
+                uiState = uiState,
+                onTextChange = { query ->
+                    onTextChange(query)
+                },
+                onClear = {
+                    onClear()
+                }
             )
         }
-        if(uiState.isLoading) {
-            LoadingContent()
-        }
-        if(uiState.errorMessage != null) {
-            EmptyContent(descriptionText = uiState.errorMessage)
-        }
-        if(uiState.equipments == null) {
-            EmptyContent(
-                stringResource(id = R.string.type_search_query)
-            )
-        } else {
-            SearchList(
-                equipments = uiState.equipments,
-                onEquipmentClick = onEquipmentClick,
-            )
+        when {
+            uiState.isLoading -> {
+                LoadingContent()
+            }
+            uiState.equipments.isEmpty() && uiState.errorMessage == null -> {
+                EmptyContent(
+                    stringResource(id = R.string.type_search_query),
+                )
+            }
+            uiState.errorMessage != null -> {
+                EmptyContent(descriptionText = uiState.errorMessage)
+            }
+            else -> {
+                SearchList(
+                    equipments = uiState.equipments,
+                    onEquipmentClick = onEquipmentClick,
+                )
+            }
         }
     }
 }
@@ -79,7 +84,7 @@ fun SearchScreen(
 @Composable
 fun SearchList(
     equipments: List<Equipment>,
-    onEquipmentClick: (equipmentId: Int) -> Unit,
+    onEquipmentClick: (equipmentId: String) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -96,7 +101,7 @@ fun SearchList(
                         onEquipmentClick(equipmentId)
                     },
                 )
-            }
+            },
         )
     }
 }
@@ -107,13 +112,21 @@ fun SearchScreenPreview() {
     TravelerTheme {
         SearchScreen(
             uiState = SearchState(
-                equipments = listOf(
-                    Equipment(name = "Searched Equipment 1"),
-                    Equipment(name = "Searched Equipment 2"),
-                )
+                equipments = List(10) {
+                    Equipment(
+                        id = "",
+                        name = "Equipment ${it + 1}",
+                        image = "",
+                        description = "",
+                        cost = 0,
+                        categoryId = "",
+                    )
+                },
             ),
             onEquipmentClick = {},
-            onBackClick = {}
+            onBackClick = {},
+            onTextChange = {},
+            onClear = {},
         )
     }
 }
