@@ -2,7 +2,9 @@ package com.sunkitto.traveler.feature.equipmentsDetailed
 
 sealed interface EquipmentsDetailedEvent {
 
-    data class LoadEquipment(val equipmentId: Int) : EquipmentsDetailedEvent
+    object LoadEquipment : EquipmentsDetailedEvent
+
+    object OnFavourite : EquipmentsDetailedEvent
 
     object OnIncreaseEquipmentsCount : EquipmentsDetailedEvent
 
@@ -11,4 +13,8 @@ sealed interface EquipmentsDetailedEvent {
     object OnIncreaseRentDays : EquipmentsDetailedEvent
 
     object OnDecreaseRentDays : EquipmentsDetailedEvent
+
+    object OnAddToCart : EquipmentsDetailedEvent
+
+    object OnRemoveFromCart : EquipmentsDetailedEvent
 }
