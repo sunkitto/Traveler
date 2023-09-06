@@ -15,9 +15,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.sunkitto.traveler.feature.auth.sign_in.SignInEvent
-import com.sunkitto.traveler.feature.auth.sign_in.SignInScreen
-import com.sunkitto.traveler.feature.auth.sign_in.SignInViewModel
+import com.sunkitto.traveler.feature.auth.signIn.SignInEvent
+import com.sunkitto.traveler.feature.auth.signIn.SignInScreen
+import com.sunkitto.traveler.feature.auth.signIn.SignInViewModel
 import com.sunkitto.traveler.navigation.constants.Graph
 import com.sunkitto.traveler.navigation.constants.Route
 import com.sunkitto.traveler.ui.designSystem.TravelerSnackBarVisuals
@@ -26,10 +26,9 @@ import kotlinx.coroutines.launch
 fun NavGraphBuilder.authGraph(navController: NavController) {
     navigation(
         route = Graph.AUTH_GRAPH,
-        startDestination = Route.SIGN_IN
+        startDestination = Route.SIGN_IN,
     ) {
         composable(route = Route.SIGN_IN) {
-
             val viewModel = hiltViewModel<SignInViewModel>()
             val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -39,31 +38,32 @@ fun NavGraphBuilder.authGraph(navController: NavController) {
             val launcher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartIntentSenderForResult(),
                 onResult = { result ->
-                    if(result.resultCode == RESULT_OK) {
+                    if (result.resultCode == RESULT_OK) {
                         val data = result.data ?: return@rememberLauncherForActivityResult
                         viewModel.onEvent(SignInEvent.SignInWithGoogle(data))
                     }
-                }
+                },
             )
 
             LaunchedEffect(key1 = state.intentSender) {
                 val intentSender = state.intentSender
-                if(intentSender != null) {
+                if (intentSender != null) {
                     launcher.launch(
-                        IntentSenderRequest.Builder(intentSender).build()
+                        IntentSenderRequest.Builder(intentSender).build(),
                     )
                 }
             }
             LaunchedEffect(key1 = state.isSuccess) {
-                if(state.isSuccess)
+                if (state.isSuccess) {
                     navController.navigate(Graph.BOTTOM_NAV_GRAPH)
+                }
             }
             LaunchedEffect(key1 = state.errorMessage) {
                 val errorMessage = state.errorMessage
-                if(errorMessage != null) {
+                if (errorMessage != null) {
                     scope.launch {
                         snackBarHostState.showSnackbar(
-                            TravelerSnackBarVisuals(errorMessage)
+                            TravelerSnackBarVisuals(errorMessage),
                         )
                     }
                 }
@@ -74,7 +74,7 @@ fun NavGraphBuilder.authGraph(navController: NavController) {
                 snackBarHostState = snackBarHostState,
                 onGoogleSignInClick = {
                     viewModel.onEvent(SignInEvent.SignInIntent)
-                }
+                },
             )
         }
     }
