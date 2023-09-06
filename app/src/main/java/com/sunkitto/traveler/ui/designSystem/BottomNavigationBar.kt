@@ -18,12 +18,11 @@ import com.sunkitto.traveler.navigation.BottomBarScreen
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
-
-     val bottomNavigationScreens = listOf(
-         BottomBarScreen.Categories,
-         BottomBarScreen.Cart,
-         BottomBarScreen.Favourites,
-         BottomBarScreen.Account,
+    val bottomNavigationScreens = listOf(
+        BottomBarScreen.Categories,
+        BottomBarScreen.Cart,
+        BottomBarScreen.Favourites,
+        BottomBarScreen.Account,
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -32,7 +31,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         bottomBarScreen.route == currentDestination?.route
     }
 
-    if(bottomBarDestination) {
+    if (bottomBarDestination) {
         NavigationBar {
             bottomNavigationScreens.forEach { bottomBarScreen ->
                 BottomNavigationItem(
