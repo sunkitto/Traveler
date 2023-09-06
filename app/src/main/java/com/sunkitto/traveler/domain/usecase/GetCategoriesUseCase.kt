@@ -1,15 +1,18 @@
 package com.sunkitto.traveler.domain.usecase
 
-import com.sunkitto.traveler.common.Result
+import com.sunkitto.traveler.common.TravelerResult
+import com.sunkitto.traveler.domain.model.Category
 import com.sunkitto.traveler.domain.repository.CategoriesRepository
-import com.sunkitto.traveler.model.Category
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetCategoriesUseCase @Inject constructor(
-    private val categoriesRepository: CategoriesRepository
+    private val categoriesRepository: CategoriesRepository,
 ) {
 
-    operator fun invoke(): Flow<Result<List<Category>>> =
+    /**
+     * Returns list of categories.
+     */
+    operator fun invoke(): Flow<TravelerResult<List<Category>>> =
         categoriesRepository.getCategories()
 }
